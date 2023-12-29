@@ -1,0 +1,2 @@
+class UnexistingCoordinatesException(Exception):
+    pass
