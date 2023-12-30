@@ -3,19 +3,27 @@ import importlib
 
 from ClasesCorrector import SuperClassForTests
 
+import sys
+import os
+import git
+
+repo_path = git.Repo('.', search_parent_directories=True).working_tree_dir
+sys.path.append(os.path.join(repo_path, "src", "SpreadsheetMarkerForStudents"))
+sys.path.append(os.path.join(repo_path, "src"))
+
 class TestRunner:
 
     notas = {} #es un mapa <string (clase), float (puntos obtenidos)>
 
     def __init__(self):
         self.toBeRun = [
-"text_content_test.TextContentTest", \
-"number_content_test.NumberContentTest", \
-"formula_content_test.FormulaContentTest", \
-"dependent_cells_test.DependentCellsTest", \
-"circular_dependencies_test.CircularDependenciesTest", \
-"save_test.SaveTest", \
-"load_test.LoadTest" \
+"markerrun.text_content_test.TextContentTest", \
+"markerrun.number_content_test.NumberContentTest", \
+"markerrun.formula_content_test.FormulaContentTest", \
+"markerrun.dependent_cells_test.DependentCellsTest", \
+"markerrun.circular_dependencies_test.CircularDependenciesTest", \
+"markerrun.save_test.SaveTest", \
+"markerrun.load_test.LoadTest" \
             ]
         self.porcentajes = [3,3,39,15,10,12.5,12.5]
         self.clasesAPorcentajes = {} #mapa <string (clase),float (porcentaje)>

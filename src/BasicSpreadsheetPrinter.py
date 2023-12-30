@@ -8,3 +8,4 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
     
     def print(self, spreadsheet:Spreadsheet) -> None:
         print("Print still not implemented...")
+        

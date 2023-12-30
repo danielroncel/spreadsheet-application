@@ -1,7 +1,7 @@
-from abc import abstractmethod 
+from abc import ABC, abstractmethod 
 from Spreadsheet import Spreadsheet
 
-class SpreadsheetPrinter:
+class SpreadsheetPrinter(ABC):
     
     @abstractmethod
     def print(self, spreadsheet:Spreadsheet) -> None:

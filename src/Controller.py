@@ -8,6 +8,9 @@ from Formula import Formula
 from BasicSpreadsheetPrinter import BasicSpreadsheetPrinter
 from S2VSpreadsheetManager import S2VSpreadsheetManager
 
+from SpreadsheetMarkerForStudents.entities.bad_coordinate_exception import BadCoordinateException
+from SpreadsheetMarkerForStudents.entities.no_number_exception import NoNumberException
+
 # Leer documentación Juan Carlos para implementar
 # BadCoordinateException, NoNumberException, ReadingSpreadSheetException, SavingSpreadSheetException, ContentException, CircularDependencyException
 
@@ -25,13 +28,29 @@ class Controller(ISpreadsheetControllerForChecker):
 
     def get_cell_content_as_float(self, coord):
         # Implement the method according to the specification
-        pass
+        CellPrechecker.check_coordinates_validity(coord)
         
+        content_value = self.spreadsheet.get_cell_content(coord)
+        
+        if content_value is None or type(content_value) == str:
+            raise NoNumberException
+        else:
+            return content_value
+
 
     def get_cell_content_as_string(self, coord):
         # Implement the method according to the specification
-        pass
-
+        CellPrechecker.check_coordinates_validity(coord)
+        
+        content_value = self.spreadsheet.get_cell_content(coord)
+        
+        if content_value is None:
+            return ''
+        elif type(content_value) == float:
+            return float(content_value)
+        else:
+            return content_value
+            
 
     def get_cell_formula_expression(self, coord):
         # Implement the method according to the specification
@@ -73,13 +92,16 @@ class Controller(ISpreadsheetControllerForChecker):
         self.spreadsheet.add_content(coord, content)
     
     
-    def check_content_type(str_content:str) -> str:
+    def check_content_type(self, str_content:str) -> str:
         
-        if str_content.isdigit():
+        try:
+            _ = float(str_content)
             return "numerical"
-        elif str_content.startswith("="):
-            return "formula"
-        return "textual"
+        except ValueError:
+            if str_content.startswith("="):
+                return "formula"
+            else:
+                return "textual"
     
     
     def print_spreadsheet(self) -> None:

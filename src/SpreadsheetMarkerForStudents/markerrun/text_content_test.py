@@ -1,6 +1,5 @@
 import traceback
-from ClasesCorrector import SuperClassForTests
-
+from markerrun.ClasesCorrector import SuperClassForTests
 from usecasesmarker.spread_sheet_factory_for_checker import SpreadSheetFactoryForChecker
 
 class TextContentTest(SuperClassForTests):

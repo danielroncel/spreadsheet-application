@@ -2,7 +2,7 @@ import re
 from Spreadsheet import Spreadsheet
 
 from UnexistingCellException import UnexistingCellException
-from BadCoordinateException import BadCoordinateException
+from SpreadsheetMarkerForStudents.entities.bad_coordinate_exception import BadCoordinateException
 
 class CellPrechecker:
     
@@ -12,7 +12,7 @@ class CellPrechecker:
         pattern = re.compile(r'^[A-Z]+[1-9]\d*$')
         
         if not pattern.match(coord):
-            raise BadCoordinateException
+            raise BadCoordinateException(f"Coordinates {coord} are unvalid")
         
         return True
     

@@ -15,8 +15,15 @@ class Interface:
         
         if self.controller.spreadsheet is None:
             raise NoSpreadsheetException("There is no spreadsheet to be edited")
+
+        command_tokens = command.split()
+        if len(command_tokens) < 3:
+            raise InvalidCommandException("Invalid arguments for E command")
+        
+        coord = command_tokens[1]
+        str_content = ' '.join(command_tokens[2:])
     
-        raise Exception("Complete the code")
+        self.controller.set_cell_content(coord, str_content)
 
     def read_commands_option(self, command:str) -> None:
         

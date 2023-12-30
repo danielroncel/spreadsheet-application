@@ -1,7 +1,7 @@
-from abc import abstractmethod 
+from abc import ABC, abstractmethod 
 from Spreadsheet import Spreadsheet
 
-class SpreadsheetManager:
+class SpreadsheetManager(ABC):
     
     @abstractmethod
     def save(spreadsheet:Spreadsheet, file_path:str) -> None:

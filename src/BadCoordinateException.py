@@ -1,2 +1,0 @@
-class BadCoordinateException(Exception):
-    pass

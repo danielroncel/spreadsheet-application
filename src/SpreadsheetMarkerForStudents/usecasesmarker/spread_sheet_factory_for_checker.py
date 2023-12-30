@@ -1,13 +1,5 @@
-"""
 from usecasesmarker.spreadsheet_controller_for_checker import ISpreadsheetControllerForChecker
-"""
-import git
-import sys
 
-repo_path = git.Repo('.', search_parent_directories=True).working_tree_dir
-sys.path.append(repo_path+'/src')
-
-from spreadsheet_controller_for_checker import ISpreadsheetControllerForChecker
 from Controller import Controller
 
 class SpreadSheetFactoryForChecker:
@@ -22,17 +14,4 @@ class SpreadSheetFactoryForChecker:
     # @return an object of a class that implements the methods specified within ISpreadsheetControllerForChecker.
 
     def create_spreadsheet_controller() -> ISpreadsheetControllerForChecker:
-        
         return Controller()
-        """
-        #REPLACE THE FOLLOWING CODE!!!
-        raise Exception("SpreadsheetFactoryForChecker::" \
-                        + "create_spreadsheet_controller(). You MUST implement the code of " \
-                        + "this method in this class. The code MUST create a class that " \
-                        + "implements the methods specified within ISpreadsheetControllerForChecker. " \
-                        + "This code must create the framework of objects that allow that, once finalized its execution, " \
-                        + "everything is ready for invoking the methods of the object implementing the methods specified within " \
-                        + "ISpreadsheetControllerForChecker and starting setting contents in the spreadsheet cells and start checking results " \
-                        + "marking your code"
-                        )
-        """
