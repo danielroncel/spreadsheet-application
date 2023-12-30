@@ -5,6 +5,8 @@ from CellFactory import CellFactory
 from Numerical import Numerical
 from Textual import Textual
 from Formula import Formula
+from BasicSpreadsheetPrinter import BasicSpreadsheetPrinter
+from S2VSpreadsheetManager import S2VSpreadsheetManager
 
 # Leer documentación Juan Carlos para implementar
 # BadCoordinateException, NoNumberException, ReadingSpreadSheetException, SavingSpreadSheetException, ContentException, CircularDependencyException
@@ -12,6 +14,12 @@ from Formula import Formula
 class Controller(ISpreadsheetControllerForChecker):
 
     def __init__(self):
+        self.spreadsheet = Spreadsheet()
+        self.spreadsheet_printer = BasicSpreadsheetPrinter()
+        self.spreadsheet_manager = S2VSpreadsheetManager()
+
+
+    def create_new_spreadsheet(self):
         self.spreadsheet = Spreadsheet()
 
 
@@ -32,12 +40,12 @@ class Controller(ISpreadsheetControllerForChecker):
 
     def load_spreadsheet_from_file(self, s_name_in_user_dir):
         # Implement the method according to the specification
-        pass
+        self.spreadsheet = self.spreadsheet_manager.load(s_name_in_user_dir)
 
 
     def save_spreadsheet_to_file(self, s_name_in_user_dir):
         # Implement the method according to the specification
-        pass
+        self.spreadsheet_manager.save(self.spreadsheet, s_name_in_user_dir)
 
 
     def set_cell_content(self, coord, str_content):
@@ -72,3 +80,7 @@ class Controller(ISpreadsheetControllerForChecker):
         elif str_content.startswith("="):
             return "formula"
         return "textual"
+    
+    
+    def print_spreadsheet(self) -> None:
+        self.spreadsheet_printer.print(self.spreadsheet)

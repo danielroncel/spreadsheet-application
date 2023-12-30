@@ -1,2 +1,2 @@
-class UnexistingCoordinatesException(Exception):
+class UnexistingCellException(Exception):
     pass
