@@ -1,6 +1,7 @@
 import os
 
 from Controller import Controller
+from Spreadsheet import Spreadsheet
 
 from NoSpreadsheetException import NoSpreadsheetException
 from InvalidCommandException import InvalidCommandException
@@ -68,7 +69,7 @@ class Interface:
         option = command.split()[0]
         
         if option == 'C':
-            self.spreadsheet = self.controller.create_new_spreadsheet()
+            self.controller.spreadsheet = Spreadsheet()
         elif option == 'L':
             self.load_spreadsheet_option(command)
         elif option == 'S':

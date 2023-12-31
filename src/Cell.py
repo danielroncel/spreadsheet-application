@@ -13,6 +13,8 @@ class Cell:
     def get_content(self):
         return self.content
 
-
     def set_content(self, content:Content):
         self.content = content
+        
+    def get_coordinates(self):
+        return self.coordinate
