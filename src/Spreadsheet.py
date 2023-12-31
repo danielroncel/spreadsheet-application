@@ -1,3 +1,5 @@
+import re
+
 from Cell import Cell
 from Content import Content
 
@@ -35,4 +37,16 @@ class Spreadsheet:
             return None
     
     def get_all_cell_coordinates(self) -> list:
-        return list(self.cells.keys())
+        
+        coords = list(self.cells.keys())
+        
+        parsed_coords = list()
+        for coord in coords:
+            match = re.match(r'([A-Z]+)(\d+)', coord)
+            row, col = match.groups()
+            parsed_coords.append( (row, col) )
+            
+        sorted_coords = sorted(parsed_coords)
+        sorted_coords = [row+col for row, col in sorted_coords]
+        
+        return sorted_coords

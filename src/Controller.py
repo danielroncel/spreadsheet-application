@@ -47,7 +47,7 @@ class Controller(ISpreadsheetControllerForChecker):
         if content_value is None:
             return ''
         elif type(content_value) == float:
-            return float(content_value)
+            return str(content_value)
         else:
             return content_value
             

@@ -20,7 +20,7 @@ def print_spreadsheet(spreadsheet):
 # Example usage:
 data = [
     ["Name", "Age", "City"],
-    ["John Doe", 30, "New York"],
+    ["", '', ''],
     ["Jane Smith", 25, "San Francisco"],
     ["Bob Johnson", 40, "Los Angeles"]
 ]
