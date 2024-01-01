@@ -8,11 +8,11 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
     def __init__(self):
         pass
     
-    def __generate_next_row__(row:str):
+    def __generate_next_column__(col:str):
         
         # Convert the coordinate to a numeric value
         numeric_value = 0
-        for char in row:
+        for char in col:
             numeric_value = numeric_value * 26 + (ord(char) - ord('A') + 1)
 
         # Increment the numeric value
@@ -30,8 +30,11 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
     def print(self, spreadsheet:Spreadsheet) -> None:
         
         coords = spreadsheet.get_all_cell_coordinates()
-        max_row = spreadsheet.get_max_row()
         max_col = spreadsheet.get_max_col()
+        max_row = spreadsheet.get_max_row()
+        
+        if len(coords) == 0:
+            return
         
         values = []
         for coord in coords:
@@ -47,11 +50,11 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
         
         print("\n")
         
-        current_row = 'A'
-        while True:
+        for current_row in range(1, max_row+1):
             
-            for current_col in range(1, max_col+1):
-                current_coord = current_row + str(current_col)
+            current_col = 'A'
+            while True:
+                current_coord = current_col + str(current_row)
                 
                 value = spreadsheet.get_cell_content(current_coord)
                 if value is None:
@@ -65,12 +68,10 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
                     value = str(value)
                     
                 print(f"| {value.ljust(max_length)[:max_length]}", end='')
-                #print(f"| {value: <{max_length}} ", end="")
                 
-            print()   
-            #print("\n" + "-" * (max_col + 4 * len(max_length)))
+                if current_col == max_col:
+                    break
+                
+                current_col = BasicSpreadsheetPrinter.__generate_next_column__(current_col)
             
-            if current_row == max_row:
-                return
-            
-            current_row = BasicSpreadsheetPrinter.__generate_next_row__(current_row)
+            print()

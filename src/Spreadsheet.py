@@ -10,8 +10,8 @@ class Spreadsheet:
     
     def __init__(self):
         self.cells = dict()
-        self.max_row = 'A'
-        self.max_col = 1
+        self.max_col = 'A'
+        self.max_row = 1
 
     
     def create_cell(self, coord:str) -> Cell:
@@ -20,15 +20,15 @@ class Spreadsheet:
             self.cells[coord] = Cell(coord)
             
             match = re.match(r'([A-Z]+)(\d+)', coord)
-            row, col = match.groups()
+            col, row = match.groups()
             
-            if CellComparator.compare_rows(self.max_row, row) == 1:
-                self.max_row = row
-            if CellComparator.compare_columns(self.max_col, int(col)) == 1:
-                self.max_col = int(col)
+            if CellComparator.compare_columns(self.max_col, col) == 1:
+                self.max_col = col
+            if CellComparator.compare_rows(self.max_row, int(row)) == 1:
+                self.max_row = int(row)
         
             
-    def get_max_row(self) -> str:
+    def get_max_row(self) -> int:
         return self.max_row
     
     
@@ -48,6 +48,13 @@ class Spreadsheet:
         cell = self.get_cell(coord)
         cell.set_content(content)
 
+
+    def get_cell_type(self, coord:str):
+        
+        if coord in self.cells:
+            return type(self.cells[coord].get_content())
+        else:
+            return None
 
     def get_cell_content(self, coord:str):
         

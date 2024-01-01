@@ -4,25 +4,25 @@ from Cell import Cell
 
 class CellComparator:
     
-    def compare_rows(row_a:str, row_b:str):
+    def compare_columns(col_a:int, col_b:int):
         
-        if len(row_a) < len(row_b):
+        if len(col_a) < len(col_b):
             return 1
-        elif len(row_a) > len(row_b):
+        elif len(col_a) > len(col_b):
             return -1
         else:
-            if row_a == row_b:
+            if col_a == col_b:
                 return 0
-            elif row_a < row_b:
+            elif col_a < col_b:
                 return 1
             else:
                 return -1
             
-    def compare_columns(col_a:int, col_b:int):
+    def compare_rows(row_a:str, row_b:str):
         
-        if col_a == col_b:
+        if row_a == row_b:
             return 0
-        elif col_a < col_b:
+        elif row_a < row_b:
             return 1
         else:
             return -1
@@ -31,10 +31,10 @@ class CellComparator:
     def compare_cells(coords_a:str, coords_b:str):
         
         match = re.match(r'([A-Z]+)(\d+)', coords_a)
-        row_a, col_a = match.groups()
+        col_a, row_a = match.groups()
         
         match = re.match(r'([A-Z]+)(\d+)', coords_b)
-        row_b, col_b = match.groups()
+        col_b, row_b = match.groups()
         
         if row_a == row_b and col_a == col_b:
             return 0
