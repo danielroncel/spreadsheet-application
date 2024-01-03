@@ -85,10 +85,14 @@ class Controller(ISpreadsheetControllerForChecker):
         if content_type == "numerical":
             content = Numerical(str_content)
         elif content_type == "formula":
+            #TODO. Compute formula value and store it appart
+            ...
             content = Formula(str_content)
         else:
             content = Textual(str_content)
     
+        # TODO. Compute which would be the value of the 
+
         self.spreadsheet.add_content(coord, content)
     
     
