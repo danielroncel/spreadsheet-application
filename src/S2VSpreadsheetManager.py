@@ -2,6 +2,7 @@ import os
 
 from SpreadsheetManager import SpreadsheetManager
 from Spreadsheet import Spreadsheet
+from Cell import Cell
 from Formula import Formula
 from Numerical import Numerical
 from Textual import Textual
@@ -122,6 +123,8 @@ class S2VSpreadsheetManager(SpreadsheetManager):
         file = open(file_path, 'r')
         lines = file.readlines()
         
+        coordinates_formulas = list()
+        
         current_row = 1
         for line in lines:
             
@@ -141,20 +144,34 @@ class S2VSpreadsheetManager(SpreadsheetManager):
                     elif t == "textual":
                         content = Textual(element)
                     else:
-                        if 'MIN(A13:A20))' in element:
-                            alsipsclar = 1
                         element = element.replace(',', ';')
                         content = Formula(element)
+                        coordinates_formulas.append(current_coord)
                     
                     if not CellPrechecker.check_if_cell_exists(spreadsheet, current_coord):
                         CellFactory.create_cell(spreadsheet, current_coord)
                             
                     spreadsheet.add_content(current_coord, content)
-                    
-                    #formula_computer = FormulaComputer(spreadsheet, element, )
                 
                 current_col = self.__generate_next_column__(current_col)
             
             current_row = current_row + 1
+        
+        """
+        n_formulas = len(coordinates_formulas)
+        while n_formulas > 0:
+            coord = coordinates_formulas.pop(0)
+            cell = spreadsheet.get_cell(coord)
+            content = cell.get_content()
+            formula = content.get_expression()
             
+            formula_computer = FormulaComputer(spreadsheet, formula, cell)
+            
+            try:
+                value = formula_computer.compute_formula_value()
+                content.set_value(value)
+            except Exception as ex:
+                raise ex
+                coordinates_formulas.append(coord)
+        """
         return spreadsheet
