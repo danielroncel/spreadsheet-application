@@ -134,11 +134,16 @@ class S2VSpreadsheetManager(SpreadsheetManager):
                 if element != '':
                     t = self.__check_content_type__(element)
                     
+                    element = element.rstrip()
+                        
                     if t == "numerical":
                         content = Numerical(element)
                     elif t == "textual":
                         content = Textual(element)
                     else:
+                        if 'MIN(A13:A20))' in element:
+                            alsipsclar = 1
+                        element = element.replace(',', ';')
                         content = Formula(element)
                     
                     if not CellPrechecker.check_if_cell_exists(spreadsheet, current_coord):

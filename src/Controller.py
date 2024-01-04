@@ -72,7 +72,7 @@ class Controller(ISpreadsheetControllerForChecker):
             
             if type(content) == Formula:
                 expression = content.get_expression()
-                expression = expression[1:] # remove '='
+
                 return expression
                 
             else:
