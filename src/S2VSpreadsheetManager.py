@@ -1,14 +1,34 @@
+import os
+
 from SpreadsheetManager import SpreadsheetManager
 from Spreadsheet import Spreadsheet
 from Formula import Formula
+from Numerical import Numerical
+from Textual import Textual
+from FormulaComputer import FormulaComputer
+from CellPrechecker import CellPrechecker
+from CellFactory import CellFactory
+
+from ReadingSpreadSheetException import ReadingSpreadsheetException
 
 class S2VSpreadsheetManager(SpreadsheetManager):
     
     def __init__(self):
         pass
 
+    def __check_content_type__(self, str_content:str) -> str:
+            
+            try:
+                _ = float(str_content)
+                return "numerical"
+            except ValueError:
+                if str_content.startswith("="):
+                    return "formula"
+                else:
+                    return "textual"
 
-    def __generate_next_column__(col:str):
+
+    def __generate_next_column__(self, col:str):
         
         # Convert the coordinate to a numeric value
         numeric_value = 0
@@ -37,6 +57,7 @@ class S2VSpreadsheetManager(SpreadsheetManager):
     def save(self, spreadsheet:Spreadsheet, file_path:str) -> None:
         max_row = spreadsheet.get_max_row()
         max_col = spreadsheet.get_max_col()
+        coordinates = spreadsheet.get_all_cell_coordinates()
         
         spreadsheet_str = ''
         
@@ -48,28 +69,34 @@ class S2VSpreadsheetManager(SpreadsheetManager):
             while True:
                 current_coord = current_col + str(current_row)
                 
-                value = spreadsheet.get_cell_content(current_coord)
-                
-                if value is None:
+                if current_coord not in coordinates:
                     value = ''
-                elif type(value) == float:
-                    if value == int(value):
-                        value = str(int(value))
-                    else:
-                        value = str(value)
                 else:
-                    value = str(value)
+                    content = spreadsheet.get_cell_content(current_coord)
                     
-                cell_type = spreadsheet.get_cell_type(current_coord)
-                if cell_type == Formula:
-                    value = value.replace(';', ',')
-                    
+                    if type(content) == Numerical:
+                        value = content.get_value()
+                        # if can be expressed as integer, remove the decimals
+                        if value == int(value):
+                            value = str(int(value))
+                        # if it has decimals, keep them
+                        else:
+                            value = str(value)
+                            
+                    elif type(content) == Textual:
+                        value = content.get_value()
+                        
+                    # if the content is of type Formula
+                    else:
+                        value = content.get_expression()
+                        value = value.replace(';', ',')
+                        
                 row_content.append(value)
                 
                 if current_col == max_col:
                     break
                 
-                current_col = S2VSpreadsheetManager.__generate_next_column__(current_col)
+                current_col = self.__generate_next_column__(current_col)
                 
             last_index = self.find_latest_non_empty_string_index(row_content)
             
@@ -86,4 +113,43 @@ class S2VSpreadsheetManager(SpreadsheetManager):
         file.close()
 
     def load(self, file_path:str) -> Spreadsheet:
-        pass
+        
+        if not os.path.isfile(file_path):
+            raise ReadingSpreadsheetException(f"File {file_path} does not exists")
+        
+        spreadsheet = Spreadsheet()
+        
+        file = open(file_path, 'r')
+        lines = file.readlines()
+        
+        current_row = 1
+        for line in lines:
+            
+            elements_list = line.split(';')
+            
+            current_col = 'A'
+            for element in elements_list:
+                current_coord = current_col + str(current_row)
+                
+                if element != '':
+                    t = self.__check_content_type__(element)
+                    
+                    if t == "numerical":
+                        content = Numerical(element)
+                    elif t == "textual":
+                        content = Textual(element)
+                    else:
+                        content = Formula(element)
+                    
+                    if not CellPrechecker.check_if_cell_exists(spreadsheet, current_coord):
+                        CellFactory.create_cell(spreadsheet, current_coord)
+                            
+                    spreadsheet.add_content(current_coord, content)
+                    
+                    #formula_computer = FormulaComputer(spreadsheet, element, )
+                
+                current_col = self.__generate_next_column__(current_col)
+            
+            current_row = current_row + 1
+            
+        return spreadsheet

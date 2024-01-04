@@ -30,32 +30,56 @@ class Controller(ISpreadsheetControllerForChecker):
         # Implement the method according to the specification
         CellPrechecker.check_coordinates_validity(coord)
         
-        content_value = self.spreadsheet.get_cell_content(coord)
-        
-        if content_value is None or type(content_value) == str:
-            raise NoNumberException
-        else:
-            return content_value
-
+        if self.spreadsheet.cell_exists(coord):
+            content = self.spreadsheet.get_cell_content(coord)
+            
+            if type(content) == Textual:
+                raise NoNumberException
+            
+            return content.get_value()
+                
 
     def get_cell_content_as_string(self, coord):
         # Implement the method according to the specification
         CellPrechecker.check_coordinates_validity(coord)
         
-        content_value = self.spreadsheet.get_cell_content(coord)
         
-        if content_value is None:
-            return ''
-        elif type(content_value) == float:
-            return str(content_value)
-        else:
-            return content_value
+        if self.spreadsheet.cell_exists(coord):
+            content = self.spreadsheet.get_cell_content(coord)
+            
+            
+            if type(content) == Numerical:
+                value = content.get_value()
+                
+                if value == int(value):
+                    return str(int(value))
+                return str(value)
+                                
+            elif type(content) == Textual:
+                return content.get_value()
+            else:
+                return content.get_expression()
+        
+        return ''
             
 
     def get_cell_formula_expression(self, coord):
         # Implement the method according to the specification
-        pass
+        CellPrechecker.check_coordinates_validity(coord)
 
+        if self.spreadsheet.cell_exists(coord):
+            content = self.spreadsheet.get_cell_content(coord)
+            
+            if type(content) == Formula:
+                expression = content.get_expression()
+                expression = expression[1:] # remove '='
+                return expression
+                
+            else:
+                raise BadCoordinateException
+        else:
+            raise BadCoordinateException
+        
 
     def load_spreadsheet_from_file(self, s_name_in_user_dir):
         # Implement the method according to the specification
@@ -85,13 +109,9 @@ class Controller(ISpreadsheetControllerForChecker):
         if content_type == "numerical":
             content = Numerical(str_content)
         elif content_type == "formula":
-            #TODO. Compute formula value and store it appart
-            ...
             content = Formula(str_content)
         else:
             content = Textual(str_content)
-    
-        # TODO. Compute which would be the value of the 
 
         self.spreadsheet.add_content(coord, content)
     

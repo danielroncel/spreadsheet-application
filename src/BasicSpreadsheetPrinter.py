@@ -1,5 +1,8 @@
 from SpreadsheetPrinter import SpreadsheetPrinter
 from Spreadsheet import Spreadsheet
+from Numerical import Numerical
+from Formula import Formula
+from Textual import Textual
 
 from itertools import permutations
 
@@ -38,14 +41,24 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
         
         values = []
         for coord in coords:
-            value = spreadsheet.get_cell_content(coord)
-            if type(value) == float:
-                if value == int(value):
-                    value = str(int(value))
+            
+            if spreadsheet.cell_exists(coord):
+                content = spreadsheet.get_cell_content(coord)    
+
+                if type(content) == Numerical:
+                    value = content.get_value()
+                    
+                    if value == int(value):
+                        value = str(int(value))
+                    else:
+                        value = str(value)
+                elif type(content) == Textual:
+                    value = content.get_value()
                 else:
-                    value = str(value)
+                    value = content.get_expression()
+                                
             values.append(value)
-        
+            
         max_length = len(max(values, key=len))
         
         print("\n")
@@ -56,16 +69,22 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
             while True:
                 current_coord = current_col + str(current_row)
                 
-                value = spreadsheet.get_cell_content(current_coord)
-                if value is None:
-                    value = ''
-                elif type(value) == float:
-                    if value == int(value):
-                        value = str(int(value))
+                if spreadsheet.cell_exists(current_coord):
+                    content = spreadsheet.get_cell_content(current_coord)    
+
+                    if type(content) == Numerical:
+                        value = content.get_value()
+                        
+                        if value == int(value):
+                            value = str(int(value))
+                        else:
+                            value = str(value)
+                    elif type(content) == Textual:
+                        value = content.get_value()
                     else:
-                        value = str(value)
+                        value = content.get_expression()
                 else:
-                    value = str(value)
+                    value = ''
                     
                 print(f"| {value.ljust(max_length)[:max_length]}", end='')
                 

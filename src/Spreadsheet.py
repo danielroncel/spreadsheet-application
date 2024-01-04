@@ -59,11 +59,17 @@ class Spreadsheet:
     def get_cell_content(self, coord:str):
         
         if coord in self.cells:
-            return self.cells[coord].get_content().get_value()
+            return self.cells[coord].get_content()
         else:
             return None
     
 
     def get_all_cell_coordinates(self) -> list:
         return list(self.cells.keys())
+    
+    
+    def cell_exists(self, coord) -> bool:
+        if coord in self.cells:
+            return True
+        return False
         
