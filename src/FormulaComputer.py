@@ -4,6 +4,7 @@ from Tokenizer import Tokenizer
 from CircularityChecker import CircularityChecker
 from Parser import Parser
 from PostfixEvaluator import PostfixEvaluator
+from Cell import Cell
 
 class FormulaComputer:
 
@@ -13,7 +14,7 @@ class FormulaComputer:
         self.cell = cell
 
     def compute_formula_value(self) -> float:
-        tokens = Tokenizer.tokenize(formula)
+        tokens = Tokenizer.tokenize(self.formula)
         try: 
             circularityChecker = CircularityChecker(self.cell.getId(), self.spreadsheet, tokens)
             circularityChecker.check_circularities()
