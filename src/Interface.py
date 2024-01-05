@@ -7,12 +7,27 @@ from NoSpreadsheetException import NoSpreadsheetException
 from InvalidCommandException import InvalidCommandException
 
 class Interface:
+
+    """Class to create a textual user interface for creating, editing, loading
+    and saving spreadsheets.
+    """
     
     def __init__(self):
         self.controller = Controller()
 
 
     def edit_cell_option(self, command:str) -> None:
+        
+        """Execute a command that corresponds to editing the content of a cell
+        of the current spreadsheet
+
+        Arguments:
+            command {str} -- editing cell command
+            
+        Raises:
+            NoSpreadsheetException
+            InvalidCommandException
+        """
         
         if self.controller.spreadsheet is None:
             raise NoSpreadsheetException("There is no spreadsheet to be edited")
@@ -27,6 +42,17 @@ class Interface:
         self.controller.set_cell_content(coord, str_content)
 
     def read_commands_option(self, command:str) -> None:
+        
+        """Execute a command that corresponds to loading a text file with
+        commands and executing them.
+
+        Arguments:
+            command {str} -- read commands command
+
+        Raises:
+            InvalidCommandException
+            FileNotFoundError
+        """
         
         if len(command.split()) != 2:
             raise InvalidCommandException("Invalid arguments for RF command")
@@ -45,6 +71,16 @@ class Interface:
 
     def load_spreadsheet_option(self, command:str) -> None:
 
+        """Execute a command that corresponds to loading and spreadsheet
+        from disk
+        
+        Arguments:
+            command {str} -- Loading command
+
+        Raises:
+            InvalidCommandException: _description_
+        """
+        
         if len(command.split()) != 2:
             raise InvalidCommandException("Invalid arguments for L command")
         
@@ -55,6 +91,16 @@ class Interface:
 
     def save_spreadsheet_option(self, command:str) -> None:
         
+        """Execute a command that corresponds to saving the current spreadsheet
+        to disk
+        
+        Arguments:
+            command {str} -- Saving command
+
+        Raises:
+            InvalidCommandException
+        """
+        
         if len(command.split()) != 2:
             raise InvalidCommandException("Invalid arguments for S command")
         
@@ -64,6 +110,15 @@ class Interface:
         
         
     def execute_command(self, command:str) -> None:
+        
+        """Execute a command
+        
+        Arguments:
+            command {str} -- String representing the command
+
+        Raises:
+            InvalidCommandException
+        """
         
         # Parse input intems
         option = command.split()[0]
@@ -86,6 +141,9 @@ class Interface:
     
     
     def run_spreadsheet_application(self):
+        
+        """Method to start running the UI
+        """
         
         while True:
             

@@ -14,22 +14,37 @@ from ReadingSpreadSheetException import ReadingSpreadsheetException
 
 class S2VSpreadsheetManager(SpreadsheetManager):
     
+    
     def __init__(self):
         pass
 
+
     def __check_content_type__(self, str_content:str) -> str:
+
+        """Returns the content type corresponding to a string
+
+        Returns:
+            str: "numerical" if correspond to Numerical content. "formula" if
+            it correspond to Formula content. "textual" if it corresponds to
+            Textual content.
+        """
             
-            try:
-                _ = float(str_content)
-                return "numerical"
-            except ValueError:
-                if str_content.startswith("="):
-                    return "formula"
-                else:
-                    return "textual"
+        try:
+            _ = float(str_content)
+            return "numerical"
+        except ValueError:
+            if str_content.startswith("="):
+                return "formula"
+            else:
+                return "textual"
 
 
     def __generate_next_column__(self, col:str):
+        
+        """Given a column of the spreadsheet, it returns which is the next
+        column (e.g. given 'AB', it must return 'AC').
+        """
+        
         
         # Convert the coordinate to a numeric value
         numeric_value = 0
@@ -49,6 +64,12 @@ class S2VSpreadsheetManager(SpreadsheetManager):
     
     
     def find_latest_non_empty_string_index(self, lst):
+        
+        """Returns the index of the last element of a list
+        that thas not correspond to an empty string. If none
+        correspond to an empty string, return None.
+        """
+        
         for i in range(len(lst) - 1, -1, -1):
             if lst[i] != '':
                 return i
@@ -56,51 +77,67 @@ class S2VSpreadsheetManager(SpreadsheetManager):
 
     
     def save(self, spreadsheet:Spreadsheet, file_path:str) -> None:
+        
+        """Stores a spreadsheet in the given path
+        """
+        
         max_row = spreadsheet.get_max_row()
         max_col = spreadsheet.get_max_col()
         coordinates = spreadsheet.get_all_cell_coordinates()
         
+        # String that will store the spreadsheet in S2V format
         spreadsheet_str = ''
         
+        # Iterate over each row with content
         for current_row in range(1, max_row+1):
             
+            # List to store the content at all cells in the row
             row_content = list()
             
+            # Iterate over each column of the spreadsheet
             current_col = 'A'
             while True:
                 current_coord = current_col + str(current_row)
                 
+                # If there is no cell in this coordinate, the value is an empty
+                # string
                 if current_coord not in coordinates:
                     value = ''
+                # If there is a get, get its content
                 else:
                     content = spreadsheet.get_cell_content(current_coord)
                     
                     if type(content) == Numerical:
                         value = content.get_value()
-                        # if can be expressed as integer, remove the decimals
+                        # If the numerical content can be expressed as integer,
+                        # remove the decimals
                         if value == int(value):
                             value = str(int(value))
-                        # if it has decimals, keep them
+                        # If it has decimals, keep them
                         else:
-                            value = str(value)
-                            
+                            value = str(value) 
                     elif type(content) == Textual:
                         value = content.get_value()
-                        
-                    # if the content is of type Formula
+                    # If the content is of type Formula, get the expression and
+                    # replace ';' by ','
                     else:
                         value = content.get_expression()
                         value = value.replace(';', ',')
-                        
+                
                 row_content.append(value)
                 
+                # If there are no more columns to iterate over, go to the next
+                # row
                 if current_col == max_col:
                     break
-                
+                # Otherwise, go to the next column
                 current_col = self.__generate_next_column__(current_col)
-                
+            
+            # Get the index of the last column to be stored, i.e. the last
+            # column with a value different than an empty string
             last_index = self.find_latest_non_empty_string_index(row_content)
             
+            # If there are values to be stored, add them to the S2V string
             if len(row_content) > 0 and last_index is not None:
                 row_content = row_content[:last_index+1]
                 
@@ -113,32 +150,54 @@ class S2VSpreadsheetManager(SpreadsheetManager):
         file.write(spreadsheet_str)
         file.close()
 
+
     def load(self, file_path:str) -> Spreadsheet:
+        
+        """Tries to load an spreadsheet from a given file
+
+        Raises:
+            ReadingSpreadsheetException
+
+        Returns:
+            Spreadsheet: The spreadsheet correponding to the file in the given
+                         path.
+        """
         
         if not os.path.isfile(file_path):
             raise ReadingSpreadsheetException(f"File {file_path} does not exists")
         
+        # Create a new spreadsheet
         spreadsheet = Spreadsheet()
         
+        # Read the content of the file and split it in lines
         file = open(file_path, 'r')
         lines = file.readlines()
         
+        # List to store the coordinates at which there is formula content
         coordinates_formulas = list()
         
+        # Iterate over eack row (line)
         current_row = 1
         for line in lines:
             
+            # Separate the elements of the row
             elements_list = line.split(';')
             
+            # Iterate over each column of this row
             current_col = 'A'
             for element in elements_list:
                 current_coord = current_col + str(current_row)
                 
+                # If there is content
                 if element != '':
+                    
+                    # Get the content type
                     t = self.__check_content_type__(element)
                     
+                    # Remove end of line character (if any)
                     element = element.rstrip()
-                        
+                    
+                    # Generate the content to be stored
                     if t == "numerical":
                         content = Numerical(element)
                     elif t == "textual":
@@ -146,18 +205,20 @@ class S2VSpreadsheetManager(SpreadsheetManager):
                     else:
                         element = element.replace(',', ';')
                         content = Formula(element)
+                        # Save the coordinates of the formula
                         coordinates_formulas.append(current_coord)
                     
-                    if not CellPrechecker.check_if_cell_exists(spreadsheet, current_coord):
-                        CellFactory.create_cell(spreadsheet, current_coord)
-                            
+                    # Create the cell and add the content
+                    CellFactory.create_cell(spreadsheet, current_coord)        
                     spreadsheet.add_content(current_coord, content)
                 
+                # Get the next column to iterate over
                 current_col = self.__generate_next_column__(current_col)
             
             current_row = current_row + 1
         
         """
+        # Compute the values of all the formulas in the spreadsheet
         n_formulas = len(coordinates_formulas)
         while n_formulas > 0:
             coord = coordinates_formulas.pop(0)
@@ -174,4 +235,5 @@ class S2VSpreadsheetManager(SpreadsheetManager):
                 raise ex
                 coordinates_formulas.append(coord)
         """
+        
         return spreadsheet

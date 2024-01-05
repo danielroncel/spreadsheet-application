@@ -6,6 +6,14 @@ class CellComparator:
     
     def compare_columns(col_a:int, col_b:int):
         
+        """Returns 1 if col_a goes first than col_b in the spreadsheet.
+        Returns -1 if col_b goes first. If both are the same column, return 0.
+        
+        Examples:
+            compare_columns('A', 'B') -> 1
+            compare_columns('AA', 'A') -> -1
+        """
+        
         if len(col_a) < len(col_b):
             return 1
         elif len(col_a) > len(col_b):
@@ -20,30 +28,20 @@ class CellComparator:
             
     def compare_rows(row_a:str, row_b:str):
         
+        """Returns 1 if row_a goes first than row_b in the spreadsheet.
+        Returns -1 if row_b goes first. If both are the same row, return 0.
+        
+        Examples:
+            compare_columns(5, 10) -> 1
+            compare_columns(4, 2) -> -1
+        """
+        
         if row_a == row_b:
             return 0
         elif row_a < row_b:
             return 1
         else:
             return -1
-       
-       
-    def compare_cells(coords_a:str, coords_b:str):
-        
-        match = re.match(r'([A-Z]+)(\d+)', coords_a)
-        col_a, row_a = match.groups()
-        
-        match = re.match(r'([A-Z]+)(\d+)', coords_b)
-        col_b, row_b = match.groups()
-        
-        if row_a == row_b and col_a == col_b:
-            return 0
-        
-        row_comparison = CellComparator.compare_rows(row_a, row_b)
-        if row_comparison != 0:
-            return row_comparison
-        else:
-            return CellComparator.compare_columns(col_a, col_b)
             
 if __name__ == '__main__':
     
@@ -56,8 +54,3 @@ if __name__ == '__main__':
     print(CellComparator.compare_columns(12, 20))
     print(CellComparator.compare_columns(122, 2))
     print(CellComparator.compare_columns(8, 12))
-    
-    print(CellComparator.compare_cells('A1', 'A1'))
-    print(CellComparator.compare_cells('A1', 'B1'))
-    print(CellComparator.compare_cells('B1', 'A1'))
-    print(CellComparator.compare_cells('AA1', 'A1'))

@@ -9,6 +9,18 @@ class CellPrechecker:
     @staticmethod
     def check_coordinates_validity(coord:str) -> bool:
         
+        """Check whether the coordinate is valid. To be valid, it
+        must correspond to a sequence of letters (to indicate the column)
+        followed by a sequence of digits (to indicate the row).
+
+        Raises:
+            BadCoordinateException
+
+        Returns:
+            bool: True if the coordinate is valid. Otherwise, it raises
+                  a BadCoordinateException.
+        """
+        
         pattern = re.compile(r'^[A-Z]+[1-9]\d*$')
         
         if not pattern.match(coord):
@@ -18,6 +30,13 @@ class CellPrechecker:
     
     @staticmethod
     def check_if_cell_exists(spreadsheet:Spreadsheet, coord:str) -> bool:
+        
+        """Return True if there is a cell created in the spreadsheet with the
+        specified coordinates. Otherwise, return False.
+
+        Returns:
+            _type_: _description_
+        """
         
         try:
             cell = spreadsheet.get_cell(coord)

@@ -32,6 +32,14 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
 
     def print(self, spreadsheet:Spreadsheet) -> None:
         
+        """Print a spreadsheet as a grid showing the values of textual and
+        numerical content and, additionally, the formula expression for
+        formula content.
+        
+        Arguments:
+            spreadsheet {Spreadsheet} -- Spreadsheet to be printed
+        """
+        
         coords = spreadsheet.get_all_cell_coordinates()
         max_col = spreadsheet.get_max_col()
         max_row = spreadsheet.get_max_row()
