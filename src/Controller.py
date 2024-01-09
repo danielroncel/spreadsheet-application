@@ -7,12 +7,14 @@ from Textual import Textual
 from Formula import Formula
 from BasicSpreadsheetPrinter import BasicSpreadsheetPrinter
 from S2VSpreadsheetManager import S2VSpreadsheetManager
+from FormulaComputer import FormulaComputer
 
 from SpreadsheetMarkerForStudents.entities.bad_coordinate_exception import BadCoordinateException
 from SpreadsheetMarkerForStudents.entities.no_number_exception import NoNumberException
 
 
 class Controller(ISpreadsheetControllerForChecker):
+
 
     def __init__(self):
         self.spreadsheet = Spreadsheet()
@@ -47,7 +49,7 @@ class Controller(ISpreadsheetControllerForChecker):
                    evaluating such formula.
         """
         
-        CellPrechecker.check_coordinates_validity(coord)
+        self.spreadsheet.cell_prechecker.check_coordinates_validity(coord)
         
         if self.spreadsheet.cell_exists(coord):
             content = self.spreadsheet.get_cell_content(coord)
@@ -74,7 +76,7 @@ class Controller(ISpreadsheetControllerForChecker):
                  resulting of evaluating such formula.
         """
         
-        CellPrechecker.check_coordinates_validity(coord)
+        self.spreadsheet.cell_prechecker.check_coordinates_validity(coord)
         
         
         if self.spreadsheet.cell_exists(coord):
@@ -90,8 +92,13 @@ class Controller(ISpreadsheetControllerForChecker):
                                 
             elif type(content) == Textual:
                 return content.get_value()
+            
             else:
-                return content.get_expression()
+                try:
+                    return content.get_content()
+                except Exception as ex:
+                    print(f"Error: content={content}")
+                    raise ex
         
         return ''
             
@@ -112,13 +119,13 @@ class Controller(ISpreadsheetControllerForChecker):
             str: textual representation of a formula
         """
         
-        CellPrechecker.check_coordinates_validity(coord)
+        self.spreadsheet.cell_prechecker.check_coordinates_validity(coord)
 
         if self.spreadsheet.cell_exists(coord):
             content = self.spreadsheet.get_cell_content(coord)
             
             if type(content) == Formula:
-                expression = content.get_expression()
+                expression = content.get_content()
 
                 return expression
                 
@@ -162,31 +169,10 @@ class Controller(ISpreadsheetControllerForChecker):
             str_content -- string that represents the content to be stored in
                            the cell
         """
-        
-        """
-        Dudas:
-        1. Si en add_content se lanza un error...
-                ...¿cómo deshacemos la celda creada?
-                ...¿cómo modificamos las celdas que fueron modificadas por tener dependencias?
-        """
-        
-        CellPrechecker.check_coordinates_validity(coord)
-                
-        if not CellPrechecker.check_if_cell_exists(self.spreadsheet, coord):
-            CellFactory.create_cell(self.spreadsheet, coord)
             
         content_type = self.check_content_type(str_content)
+        self.spreadsheet.set_cell_content(coord, str_content, content_type)
 
-        if content_type == "numerical":
-            content = Numerical(str_content)
-        elif content_type == "formula":
-            content = Formula(str_content)
-        else:
-            content = Textual(str_content)
-
-        self.spreadsheet.add_content(coord, content)
-    
-    
     def check_content_type(self, str_content:str) -> str:
         
         """Returns the content type corresponding to a string

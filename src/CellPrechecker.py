@@ -1,13 +1,14 @@
 import re
-from Spreadsheet import Spreadsheet
 
 from UnexistingCellException import UnexistingCellException
 from SpreadsheetMarkerForStudents.entities.bad_coordinate_exception import BadCoordinateException
 
 class CellPrechecker:
     
-    @staticmethod
-    def check_coordinates_validity(coord:str) -> bool:
+    def __init(self):
+        pass
+    
+    def check_coordinates_validity(self, coord:str) -> bool:
         
         """Check whether the coordinate is valid. To be valid, it
         must correspond to a sequence of letters (to indicate the column)
@@ -28,8 +29,8 @@ class CellPrechecker:
         
         return True
     
-    @staticmethod
-    def check_if_cell_exists(spreadsheet:Spreadsheet, coord:str) -> bool:
+    
+    def check_if_cell_exists(self, spreadsheet, coord:str) -> bool:
         
         """Return True if there is a cell created in the spreadsheet with the
         specified coordinates. Otherwise, return False.

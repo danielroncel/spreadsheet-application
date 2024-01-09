@@ -121,7 +121,7 @@ class S2VSpreadsheetManager(SpreadsheetManager):
                     # If the content is of type Formula, get the expression and
                     # replace ';' by ','
                     else:
-                        value = content.get_expression()
+                        value = content.get_content()
                         value = value.replace(';', ',')
                 
                 row_content.append(value)
@@ -209,7 +209,7 @@ class S2VSpreadsheetManager(SpreadsheetManager):
                         coordinates_formulas.append(current_coord)
                     
                     # Create the cell and add the content
-                    CellFactory.create_cell(spreadsheet, current_coord)        
+                    CellFactory.create_cell(spreadsheet, current_coord)     
                     spreadsheet.add_content(current_coord, content)
                 
                 # Get the next column to iterate over
@@ -234,6 +234,8 @@ class S2VSpreadsheetManager(SpreadsheetManager):
             except Exception as ex:
                 raise ex
                 coordinates_formulas.append(coord)
+                
+        # TODO. Recompute depdencies
         """
         
         return spreadsheet

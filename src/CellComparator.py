@@ -4,7 +4,10 @@ from Cell import Cell
 
 class CellComparator:
     
-    def compare_columns(col_a:int, col_b:int):
+    def __init__(self):
+        pass
+
+    def compare_columns(self, col_a:int, col_b:int):
         
         """Returns 1 if col_a goes first than col_b in the spreadsheet.
         Returns -1 if col_b goes first. If both are the same column, return 0.
@@ -26,7 +29,7 @@ class CellComparator:
             else:
                 return -1
             
-    def compare_rows(row_a:str, row_b:str):
+    def compare_rows(self, row_a:str, row_b:str):
         
         """Returns 1 if row_a goes first than row_b in the spreadsheet.
         Returns -1 if row_b goes first. If both are the same row, return 0.

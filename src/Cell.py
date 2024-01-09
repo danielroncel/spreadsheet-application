@@ -2,13 +2,11 @@ from Content import Content
 
 class Cell:
 
-    def __init__(self, coord:str):
+    def __init__(self, coord:str, content = None):
         self.coordinate = coord
-
-        self.content = None
-        self.I_depend_on = []
-        self.depend_on_me = []
-
+        self.content = content
+        self.I_depend_on = set()
+        self.depend_on_me = set()
 
     def get_content(self):
         return self.content
@@ -18,3 +16,16 @@ class Cell:
         
     def get_coordinates(self):
         return self.coordinate
+    
+    def get_I_depend_on(self):
+        return self.I_depend_on
+    
+    def get_depend_on_me(self):
+        return self.depend_on_me
+    
+    def set_I_depend_on(self,depend: []):
+        self.I_depend_on = depend
+
+    def set_depend_on_me(self,depend: []):
+        self.depend_on_me = depend
+    

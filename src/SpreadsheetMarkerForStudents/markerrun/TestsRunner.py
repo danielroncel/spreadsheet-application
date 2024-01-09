@@ -61,8 +61,6 @@ class TestRunner:
             c = self.get_class(testerClass)
             b = c()
             methods =dir(c)
-            #print(str(methods))
-            #print(str(methods))
             obMethod = getattr(c,"setUpClass")
             obMethod()
             for method in methods:
