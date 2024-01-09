@@ -1,8 +1,7 @@
 from Cell import Cell
-from Spreadsheet import Spreadsheet
 
 class CellFactory:
     
     @staticmethod
-    def create_cell(spreadsheet:Spreadsheet, coord:str):
+    def create_cell(spreadsheet, coord:str):
         spreadsheet.create_cell(coord)

@@ -1,11 +1,8 @@
 import re
+from SpreadsheetMarkerForStudents.entities.content_exception import ContentException
 class Tokenizer:
-    def __init__(self,formula:str):
-        self.formula = formula
-
-    def tokenize_expression(self):
-        tokens = []
-        pattern = re.compile(r'''
+    def __init__(self):
+        self.pattern = re.compile(r'''
             (                   # Capturing group for each token type
                 [+\-*/]          # Operator
                 |[A-Za-z]+\d+    # Cell identifier
@@ -14,22 +11,28 @@ class Tokenizer:
                 |:               # Colon character
                 |;               # Semi-colon character
                 |,               # Comma
-                |\w+             # Function name (assuming it consists of alphanumeric characters)
-                |"[^"]*"         # Double-quoted string (e.g., function arguments)
-                |[%&/|@#~$€¬'¡¿`^´_-]             # everything else
+                |sum|SUMA|Sum|SUM             # Function name (assuming it consists of these combinations)
+                |mean|MEAN|Mean|PROMEDIO
+                |min| MIN | Min
+                |max|MAX|Max
             )
         ''', re.VERBOSE)
 
-        matches = pattern.findall(self.formula)
 
-        for match in matches:
-            tokens.append(match)
+    def tokenize_expression(self, formula:str) -> [str]:
+        tokens = []
+
+        matches = self.pattern.split(formula)
+
+        if matches[0]== '' or matches[1]== '':
+            raise ContentException(f"Syntactical error in formula spelling")
+
+        for i in range(1, len(matches)-1, 2):
+        # Check if the entry is not an empty string
+            if matches[i+1] != '':
+                raise ContentException(f"Syntactical error in formula spelling")
+            else:
+                tokens.append(matches[i])
 
         return tokens
     
-
-# Example usage:
-formula = "=MEAN(SUM(A3:A17;B13;4),13$~''"
-tokenizer = Tokenizer(formula)
-tokens = tokenizer.tokenize_expression()
-print(tokens)

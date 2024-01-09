@@ -4,7 +4,10 @@ from Cell import Cell
 
 class CellComparator:
     
-    def compare_columns(col_a:int, col_b:int):
+    def __init__(self):
+        pass
+
+    def compare_columns(self, col_a:int, col_b:int):
         
         if len(col_a) < len(col_b):
             return 1
@@ -18,7 +21,7 @@ class CellComparator:
             else:
                 return -1
             
-    def compare_rows(row_a:str, row_b:str):
+    def compare_rows(self, row_a:str, row_b:str):
         
         if row_a == row_b:
             return 0
@@ -28,7 +31,7 @@ class CellComparator:
             return -1
        
        
-    def compare_cells(coords_a:str, coords_b:str):
+    def compare_cells(self, coords_a:str, coords_b:str):
         
         match = re.match(r'([A-Z]+)(\d+)', coords_a)
         col_a, row_a = match.groups()
