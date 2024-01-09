@@ -155,7 +155,9 @@ class Spreadsheet:
         """
         
         self.cell_prechecker.check_coordinates_validity(coord)
-
+        
+        was_error = False
+        
         if content_type == "numerical":
             content = Numerical(str_content)
             value = float(str_content)
@@ -165,19 +167,19 @@ class Spreadsheet:
                 value,formula_content, dependent_cells = self.compute_formula_value(str_content, coord)
                 content = Formula(str_content, value, formula_content)
             except Exception as e: 
-                print(f"An error occurred: {e}")
-                return
+                was_error = True
+                content = Formula(str_content)
             
         else:
             content = Textual(str_content)
             value = str_content
-    
+
         if not self.cell_prechecker.check_if_cell_exists(self, coord):
             self.cell_factory.create_cell(self, coord)
         
         self.add_content(coord, content)
         
-        if content_type == 'formula':
+        if content_type == 'formula' and not was_error:
             self.get_cell(coord).set_I_depend_on(dependent_cells)
             self.update_dependencies(dependent_cells,coord)
         self.recompute_dependent_cells(coord)
