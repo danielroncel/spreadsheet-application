@@ -217,25 +217,26 @@ class S2VSpreadsheetManager(SpreadsheetManager):
             
             current_row = current_row + 1
         
-        """
+        
+        formula_computer = FormulaComputer(spreadsheet)
+        
         # Compute the values of all the formulas in the spreadsheet
         n_formulas = len(coordinates_formulas)
         while n_formulas > 0:
             coord = coordinates_formulas.pop(0)
             cell = spreadsheet.get_cell(coord)
             content = cell.get_content()
-            formula = content.get_expression()
-            
-            formula_computer = FormulaComputer(spreadsheet, formula, cell)
+            formula_str = content.get_content()
             
             try:
-                value = formula_computer.compute_formula_value()
+                value, formula_content, dependent_cells = formula_computer.compute_formula_value(formula_str, coord)
+                
+                spreadsheet.get_cell(coord).set_I_depend_on(dependent_cells)
+                spreadsheet.update_dependencies(dependent_cells,coord)
+                spreadsheet.recompute_dependent_cells(coord)
+                
                 content.set_value(value)
             except Exception as ex:
-                raise ex
                 coordinates_formulas.append(coord)
-                
-        # TODO. Recompute depdencies
-        """
         
         return spreadsheet

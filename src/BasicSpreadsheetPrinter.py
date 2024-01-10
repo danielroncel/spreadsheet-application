@@ -63,7 +63,15 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
                 elif type(content) == Textual:
                     value = content.get_value()
                 else:
-                    value = content.get_expression()
+                    expression = content.get_content()
+                    value = content.get_value()
+                    
+                    if value == int(value):
+                        value = str(int(value))
+                    else:
+                        value = str(value)
+                            
+                    value = expression + '(' + value + ')'
                                 
             values.append(value)
             
@@ -90,7 +98,15 @@ class BasicSpreadsheetPrinter(SpreadsheetPrinter):
                     elif type(content) == Textual:
                         value = content.get_value()
                     else:
-                        value = content.get_expression()
+                        expression = content.get_content()
+                        value = content.get_value()
+                        
+                        if value == int(value):
+                            value = str(int(value))
+                        else:
+                            value = str(value)
+                                
+                        value = expression + '(' + value + ')'
                 else:
                     value = ''
                     
