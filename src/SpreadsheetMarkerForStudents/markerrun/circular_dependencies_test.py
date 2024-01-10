@@ -1,8 +1,8 @@
 import traceback
 from markerrun.ClasesCorrector import SuperClassForTests
 from usecasesmarker.spread_sheet_factory_for_checker import SpreadSheetFactoryForChecker
-from entities.circular_dependency_exception import CircularDependencyException
-
+#from entities.circular_dependency_exception import CircularDependencyException
+from src.SpreadsheetMarkerForStudents.entities.circular_dependency_exception import CircularDependencyException
 
 class CircularDependenciesTest(SuperClassForTests):
 
@@ -35,7 +35,7 @@ class CircularDependenciesTest(SuperClassForTests):
             self.instance.set_cell_content("A5", "=A14+1")
         except Exception as err:
             print("An error has occurred while trying to set either "
-                  + "a numerical or a formula content in one cell. You should "
+                  + "a numerical or a formula content in one cell when checking circularities. You should "
                   + "review your code as this should not happen. Details "
                   + "of the exception follow: " + str(err));
             traceback.print_exc()
@@ -67,6 +67,7 @@ class CircularDependenciesTest(SuperClassForTests):
         print("\nChecking that the program detects direct circular dependencies. Value: " + str(valor_total))
         cell_str="A2"
         try:
+            ex = CircularDependencyException('test')
             content = self.instance.get_cell_content_as_float("A2")
             error = self.sAssertEquals(6.0,content,0,"The cell " + cell_str \
                                        + " should contain the value: 6 -result of formula =A6+A7+A8, when A6=1, A7=2, and A8=3- Instead, it contains the value " + str(content))

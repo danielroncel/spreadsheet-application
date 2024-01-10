@@ -1,2 +1,0 @@
-class NoSpreadsheetException(Exception):
-    pass

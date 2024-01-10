@@ -1,2 +1,0 @@
-class UnexistingCellException(Exception):
-    pass

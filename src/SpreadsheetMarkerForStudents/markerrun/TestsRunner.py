@@ -11,6 +11,8 @@ repo_path = git.Repo('.', search_parent_directories=True).working_tree_dir
 sys.path.append(os.path.join(repo_path, "src", "SpreadsheetMarkerForStudents"))
 sys.path.append(os.path.join(repo_path, "src"))
 
+sys.path.append(repo_path)
+
 class TestRunner:
 
     notas = {} #es un mapa <string (clase), float (puntos obtenidos)>

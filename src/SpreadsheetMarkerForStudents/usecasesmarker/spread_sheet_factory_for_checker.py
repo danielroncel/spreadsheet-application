@@ -1,6 +1,6 @@
 from usecasesmarker.spreadsheet_controller_for_checker import ISpreadsheetControllerForChecker
 
-from Controller import Controller
+from src.usecases.Controller import Controller
 
 class SpreadSheetFactoryForChecker:
 

@@ -1,2 +1,0 @@
-class ReadingSpreadsheetException(Exception):
-    pass
