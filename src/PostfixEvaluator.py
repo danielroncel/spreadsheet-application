@@ -9,13 +9,15 @@ from Max import Max
 from Min import Min
 from FormulaContent import FormulaContent
 import re
+from PostfixGenerationException import PostfixGenerationException
+from PostfixEvaluationException import PostfixEvaluationException
 
 class PostfixEvaluator(FormulaComputerVisitor):
     def __init__(self, spreadsheet):
         self.stack = []
         self.priorities = {
             "(":0,
-            ")":4,
+            ")":3,
             "+":1,
             "-":1,
             "*":2,
@@ -80,13 +82,13 @@ class PostfixEvaluator(FormulaComputerVisitor):
     def find_matching_parenthesis(self,tokens):
         # Find the matching closing parenthesis
         if len(tokens) <= 2:
-            raise SyntaxError("Parsing error. Empty function")
+            raise PostfixGenerationException("Unkown error during postfix generation.")
         count = 1
         i = 1
         end = len(tokens)
         in_brackets = []
         if tokens[i] == ')':
-            raise SyntaxError("Empty parenthesis")
+            raise PostfixGenerationException("Empty parenthesis. Unkown error during postfix generation.")
         while i < end and count > 0:
             if tokens[i] == '(':
                 count += 1
@@ -96,7 +98,7 @@ class PostfixEvaluator(FormulaComputerVisitor):
             i += 1
             
         if count > 0:
-            raise SyntaxError("Unbalanced parenthesis")
+            raise PostfixGenerationException("Unbalanced parenthesis. Unkown error during postfix generation.")
         
         return [i,in_brackets[:-1]]
     
@@ -139,14 +141,18 @@ class PostfixEvaluator(FormulaComputerVisitor):
     
     def evaluate_postfix_expression(self, postfix: FormulaContent): 
         self.stack = []
-        for el in postfix:
-            el.accept_visitor(self)
-        return self.stack.pop()
+        try:
+            for el in postfix:
+                el.accept_visitor(self)
+            return self.stack.pop()
+        except Exception as ex: raise PostfixEvaluationException(f"Postfix evaluation exception. {ex}")
 
     def visit_operator(self, op: Operator):
         sec_op = self.stack.pop()
         first_op = self.stack.pop()
-        res = eval(str(first_op) + op.get_value() + str(sec_op))
+        try:
+            res = eval(str(first_op) + op.get_value() + str(sec_op))
+        except: raise PostfixEvaluationException(f"Formula evaluation error.")
         self.stack.append(res)
 
     def visit_number(self, num: Number):
@@ -154,11 +160,10 @@ class PostfixEvaluator(FormulaComputerVisitor):
 
     def visit_cell_reference(self, ref: ReferenceToCell):
         cell_id = ref.get_value()
-        try:
-            val = self.spreadsheet.get_cell(cell_id).get_content().get_value()
-            self.stack.append(val)
-        except: print("Unexisting cell expection")
-
+        val = self.spreadsheet.get_cell(cell_id).get_content().get_value()  
+        if val == '': val=0
+        self.stack.append(val)
+    
     def visit_mean_function(self, fun: Mean):
         args = fun.get_arguments()
         arg_values = []
@@ -196,8 +201,8 @@ class PostfixEvaluator(FormulaComputerVisitor):
     def visit_range_of_cells(self,range:RangeOfCells):
         cell_ids = range.get_value()
         for cell_id in cell_ids:
-            try:
-                val = self.spreadsheet.get_cell(cell_id).get_content().get_value()
-                self.stack.append(val)
-            except: print("Unexisting cell")
+            val = self.spreadsheet.get_cell(cell_id).get_content().get_value()
+            if val=='': val=0
+            self.stack.append(val)
+
 

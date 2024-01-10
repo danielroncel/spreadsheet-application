@@ -1,6 +1,5 @@
 import re
 
-from UnexistingCellException import UnexistingCellException
 from SpreadsheetMarkerForStudents.entities.bad_coordinate_exception import BadCoordinateException
 
 class CellPrechecker:
@@ -42,5 +41,5 @@ class CellPrechecker:
         try:
             cell = spreadsheet.get_cell(coord)
             return True
-        except UnexistingCellException:
+        except:
             return False

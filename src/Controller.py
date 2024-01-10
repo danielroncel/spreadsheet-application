@@ -26,7 +26,7 @@ class Controller(ISpreadsheetControllerForChecker):
         
         """Set to the controller a new and empty spreadsheet
         """
-        
+
         self.spreadsheet = Spreadsheet()
 
 
@@ -97,7 +97,6 @@ class Controller(ISpreadsheetControllerForChecker):
                 try:
                     return content.get_content()
                 except Exception as ex:
-                    print(f"Error: content={content}")
                     raise ex
         
         return ''
@@ -171,7 +170,8 @@ class Controller(ISpreadsheetControllerForChecker):
         """
             
         content_type = self.check_content_type(str_content)
-        self.spreadsheet.set_cell_content(coord, str_content, content_type)
+        try: self.spreadsheet.set_cell_content(coord, str_content, content_type)
+        except Exception as ex: raise ex
 
     def check_content_type(self, str_content:str) -> str:
         

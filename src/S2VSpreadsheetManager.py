@@ -209,7 +209,7 @@ class S2VSpreadsheetManager(SpreadsheetManager):
                         coordinates_formulas.append(current_coord)
                     
                     # Create the cell and add the content
-                    CellFactory.create_cell(spreadsheet, current_coord)     
+                    spreadsheet.cell_factory.create_cell(spreadsheet, current_coord)     
                     spreadsheet.add_content(current_coord, content)
                 
                 # Get the next column to iterate over

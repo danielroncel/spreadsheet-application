@@ -3,7 +3,7 @@ import re
 from Cell import Cell
 from Content import Content
 from CellComparator import CellComparator
-from FormulaComputer import FormulaComputer
+from FormulaComputer import FormulaComputer, FormulaRecomputer
 from UnexistingCellException import UnexistingCellException
 from CellPrechecker import CellPrechecker
 from CellFactory import CellFactory
@@ -20,6 +20,7 @@ class Spreadsheet:
         self.max_col = 'A'
         self.max_row = 1
         self.formula_computer = FormulaComputer(self)
+        self.formula_recomputer = FormulaRecomputer(self)
         self.cell_comparator = CellComparator()
         self.cell_prechecker = CellPrechecker()
         self.cell_factory = CellFactory()
@@ -81,11 +82,10 @@ class Spreadsheet:
         Returns:
             Cell: cell in the specified coordinates
         """
+        if coord not in self.cells:
+            self.cell_factory.create_cell(self,coord)
         
-        if coord in self.cells:
-            return self.cells[coord]
-        
-        raise UnexistingCellException(f"There is no cell with coordinates {coord} in the spreadsheet")
+        return self.cells[coord]
         
     
     def add_content(self, coord:str, content:Content) -> None:
@@ -95,10 +95,6 @@ class Spreadsheet:
         
         cell = self.get_cell(coord)
         cell.set_content(content)
-
-    def compute_formula_value(self, str_content, coord):
-        return self.formula_computer.compute_formula_value(str_content,coord)
-    
     
     def get_cell_type(self, coord:str):
         
@@ -123,13 +119,24 @@ class Spreadsheet:
         self.circularity_checker.check_circularities(cell_id, dependent_cells)
 
     def update_dependencies(self, dependent,cell_id):
+        prev_dependencies = self.get_cell(cell_id).get_I_depend_on()
+        
+        self.get_cell(cell_id).set_I_depend_on(dependent)
+        for el in prev_dependencies:
+            if el not in dependent:
+                arr = self.get_cell(el).get_depend_on_me()
+                arr.remove(cell_id)
+                self.get_cell(el).set_depend_on_me(arr)
+        
         for s in  dependent:
-            arr = self.get_cell(s).get_depend_on_me()
-            arr.add(cell_id)
-            self.get_cell(s).set_depend_on_me(arr)
+            if s not in prev_dependencies:
+                arr = self.get_cell(s).get_depend_on_me()
+                arr.add(cell_id)
+                self.get_cell(s).set_depend_on_me(arr)
+    
 
     def recompute_dependent_cells(self,cell_id):
-        self.formula_computer.recompute_dependent_cell(cell_id)
+        self.formula_recomputer.recompute_dependent_cell(cell_id)
 
     def cell_exists(self, coord) -> bool:
         
@@ -153,31 +160,34 @@ class Spreadsheet:
             str_content -- string that represents the content to be stored in
                            the cell
         """
-        
-        self.cell_prechecker.check_coordinates_validity(coord)
+        try: self.cell_prechecker.check_coordinates_validity(coord)
+        except Exception as ex: raise ex
 
         if content_type == "numerical":
             content = Numerical(str_content)
             value = float(str_content)
+            dependent_cells = set()
         elif content_type == "formula":
             #TODO. Compute formula value and store it appart
             try:
-                value,formula_content, dependent_cells = self.compute_formula_value(str_content, coord)
+                value,formula_content, dependent_cells = self.formula_computer.compute_formula_value(str_content,coord)
                 content = Formula(str_content, value, formula_content)
             except Exception as e: 
-                print(f"An error occurred: {e}")
-                return
-            
+                raise e
         else:
             content = Textual(str_content)
             value = str_content
+            dependent_cells = set()
     
         if not self.cell_prechecker.check_if_cell_exists(self, coord):
             self.cell_factory.create_cell(self, coord)
+         
+        
         
         self.add_content(coord, content)
         
-        if content_type == 'formula':
-            self.get_cell(coord).set_I_depend_on(dependent_cells)
-            self.update_dependencies(dependent_cells,coord)
-        self.recompute_dependent_cells(coord)
+        self.update_dependencies(dependent_cells, coord)
+        
+        
+        if self.get_cell(coord).get_depend_on_me():
+            self.recompute_dependent_cells(coord)

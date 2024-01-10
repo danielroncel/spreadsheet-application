@@ -1,4 +1,4 @@
-class UnexistingCellException(Exception):
+class ParsingException(Exception):
 
     def __init__(self):
         Exception.__init__(self)

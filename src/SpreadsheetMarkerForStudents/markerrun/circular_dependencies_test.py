@@ -35,7 +35,7 @@ class CircularDependenciesTest(SuperClassForTests):
             self.instance.set_cell_content("A5", "=A14+1")
         except Exception as err:
             print("An error has occurred while trying to set either "
-                  + "a numerical or a formula content in one cell. You should "
+                  + "a numerical or a formula content in one cell when checking circularities. You should "
                   + "review your code as this should not happen. Details "
                   + "of the exception follow: " + str(err));
             traceback.print_exc()

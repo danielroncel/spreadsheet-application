@@ -1,6 +1,3 @@
-import re
-
-from Cell import Cell
 
 class CellComparator:
     

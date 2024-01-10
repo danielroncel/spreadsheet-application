@@ -1,5 +1,7 @@
 import re
 from SpreadsheetMarkerForStudents.entities.content_exception import ContentException
+from FormulaSyntaxException import FormulaSyntaxException
+
 class Tokenizer:
     def __init__(self):
         self.pattern = re.compile(r'''
@@ -25,12 +27,12 @@ class Tokenizer:
         matches = self.pattern.split(formula)
 
         if matches[0]== '' or matches[1]== '':
-            raise ContentException(f"Syntactical error in formula spelling")
+            raise FormulaSyntaxException(f"Syntactical error in formula spelling")
 
         for i in range(1, len(matches)-1, 2):
         # Check if the entry is not an empty string
             if matches[i+1] != '':
-                raise ContentException(f"Syntactical error in formula spelling")
+                raise FormulaSyntaxException(f"Syntactical error in formula spelling")
             else:
                 tokens.append(matches[i])
 

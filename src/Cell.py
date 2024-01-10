@@ -1,8 +1,9 @@
 from Content import Content
+from Textual import Textual
 
 class Cell:
 
-    def __init__(self, coord:str, content = None):
+    def __init__(self, coord:str, content = Textual('')):
         self.coordinate = coord
         self.content = content
         self.I_depend_on = set()
